@@ -25,29 +25,29 @@
     .progress-bar {
       width: 100%;
       height: 30px;
-      background-color: #d3d3d3; /* 灰色底 */
-      border: 3px solid #ff69b4; /* 粉红色边框 */
+      background-color: #d3d3d3;
+      border: 3px solid #ff69b4;
       border-radius: 20px;
       overflow: hidden;
       box-shadow: 0 0 5px #ff69b4;
-      position: relative; /* 用于定位数字 */
+      position: relative;
     }
 
     .progress-fill {
       height: 100%;
       width: 0%;
-      background-color: #ff69b4; /* 粉红色填充 */
-      transition: width 0.5s ease-out;
+      background-color: #ff69b4;
     }
 
     .progress-text {
-      position: absolute; /* 绝对定位文本 */
+      position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%); /* 精确居中 */
+      transform: translate(-50%, -50%);
       font-weight: bold;
       color: white;
       font-size: 18px;
+      display: none;
     }
   </style>
 </head>
@@ -56,43 +56,40 @@
     <div class="status-text">排队抢票中...</div>
     <div class="progress-bar">
       <div class="progress-fill" id="progressFill"></div>
-      <div class="progress-text" id="progressText">0%</div>
+      <div class="progress-text" id="progressText">40%</div>
     </div>
   </div>
 
   <script>
-    const totalDuration = 40 * 1000; // 40秒
-    const stopAt = 0.4; // 停在40%
-    const stopTime = totalDuration * stopAt; // 16秒
-    const progressFill = document.getElementById("progressFill");
-    const progressText = document.getElementById("progressText");
+    document.addEventListener("DOMContentLoaded", () => {
+      const duration = 24000; // 24 秒
+      const stopAt = 0.4; // 停在 40%
+      const progressFill = document.getElementById("progressFill");
+      const progressText = document.getElementById("progressText");
 
-    let startTime = null;
+      const start = performance.now();
+      const stopWidth = stopAt * 100;
 
-    function animateProgress(timestamp) {
-      if (!startTime) startTime = timestamp;
-      let elapsed = timestamp - startTime;
+      function update() {
+        const now = performance.now();
+        const elapsed = now - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const width = progress * stopWidth;
 
-      // 计算当前进度（最多到 40%）
-      let progress = Math.min(elapsed / totalDuration, stopAt);
-      let percentage = Math.floor(progress * 100);
+        progressFill.style.width = `${width}%`;
 
-      progressFill.style.width = `${percentage}%`;
-      progressText.textContent = `${percentage}%`;
-
-      if (progress < stopAt) {
-        requestAnimationFrame(animateProgress);
-      } else {
-        setTimeout(() => {
-          alert("你的号码牌是 123，请记住该号码并返回问卷界面回答相关问题。");
-        }, 300); // 稍微延迟一下更自然
+        if (progress < 1) {
+          requestAnimationFrame(update);
+        } else {
+          progressText.style.display = "block";
+          setTimeout(() => {
+            alert("你的号码牌是 123，请记住该号码并返回问卷界面回答相关问题。");
+          }, 300);
+        }
       }
-    }
 
-    // 页面加载后自动启动动画
-    window.onload = () => {
-      requestAnimationFrame(animateProgress);
-    };
+      requestAnimationFrame(update); // 立即开始
+    });
   </script>
 </body>
 </html>
