@@ -31,6 +31,7 @@
       height: 100%;
       width: 0%;
       background-color: #ff69b4;
+      transition: width 0.1s linear;
     }
 
     .progress-text {
@@ -48,9 +49,8 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      const totalDuration = 180000; // 总加载时间：180 秒
-      const stopAtPercent = 10;     // 停在 10%
-      const stopTime = totalDuration * (stopAtPercent / 100); // 180000 * 0.1 = 18000ms = 18s
+      const totalDuration = 15000; // 加载到 20% 所用时间：15秒
+      const stopAtPercent = 20;     // 最终加载到 20%
 
       const progressFill = document.getElementById("progressFill");
 
@@ -59,7 +59,7 @@
       function update() {
         const now = performance.now();
         const elapsed = now - start;
-        const progress = Math.min(elapsed / stopTime, 1); // 18s 内从 0% 到 10%
+        const progress = Math.min(elapsed / totalDuration, 1); // 0 到 1
         const width = progress * stopAtPercent;
 
         progressFill.style.width = `${width}%`;
@@ -67,7 +67,7 @@
         if (progress < 1) {
           requestAnimationFrame(update);
         }
-        // 停下时不做额外处理，不显示文字
+        // 不再继续更新，保持20%
       }
 
       requestAnimationFrame(update);
